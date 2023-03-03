@@ -1,0 +1,86 @@
+import java.io.*;  
+import java.util.*;
+
+public class NQueens {
+    
+    public static int[][] nQueens(int n) {
+        int[][] board = new int[n][n];
+        int[][] bestSolution = new int[n][n];
+        int minConflicts = Integer.MAX_VALUE;
+        
+        boolean isSafe(int row, int col) {
+            for (int i = 0; i < row; i++) {
+                if (board[i][col] == 1) {
+                    return false;
+                }
+                if (row-i+col >= 0 && row-i+col < n && board[i][row-i+col] == 1) {
+                    return false;
+                }
+                if (col-row+i >= 0 && col-row+i < n && board[i][col-row+i] == 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        void backtrack(int row) {
+            if (row == n) {
+                int conflicts = 0;
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < n; j++) {
+                        if (board[i][j] == 1) {
+                            conflicts += 1;
+                        }
+                    }
+                }
+                if (conflicts < minConflicts) {
+                    minConflicts = conflicts;
+                    for (int i = 0; i < n; i++) {
+                        for (int j = 0; j < n; j++) {
+                            bestSolution[i][j] = board[i][j];
+                        }
+                    }
+                }
+                return;
+            }
+            
+            for (int col = 0; col < n; col++) {
+                if (isSafe(row, col)) {
+                    board[row][col] = 1;
+                    backtrack(row+1);
+                    board[row][col] = 0;
+                    
+                    if (minConflicts == 0) {
+                        return;
+                    }
+                    
+                    int sum = 0;
+                    for (int i = 0; i < n; i++) {
+                        for (int j = 0; j < n; j++) {
+                            if (board[i][j] == 1) {
+                                sum += 1;
+                            }
+                        }
+                    }
+                    if (sum >= minConflicts) {
+                        return;
+                    }
+                }
+            }
+        }
+        
+        backtrack(0);
+        return bestSolution;
+    }
+
+    public static void main(String[] args) {
+        int n = 8;
+        int[][] solution = nQueens(n);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.print(solution[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
